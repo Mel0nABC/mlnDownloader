@@ -3,8 +3,8 @@
  SPDX-License-Identifier: MIT */
 package dev.mel0n.config;
 
-import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,15 +25,15 @@ public class ApplicationConfig {
         return args -> {
             System.out.println("################################# Loading data #################################");
 
-            File folder = new File(MlnDownloaderService.getDOWNLOAD_FOLDER().toString());
+            Path pathFolder = MlnDownloaderService.getDOWNLOAD_FOLDER();
 
-            if (!folder.exists())
-                folder.mkdir();
+            if (!Files.exists(pathFolder))
+                Files.createDirectory(pathFolder);
 
-            File file = new File("data.bin");
+            Path fileDataBase = Path.of("data.bin");
 
-            if (file.exists()) {
-                try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
+            if (Files.exists(fileDataBase)) {
+                try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileDataBase.toString()))) {
 
                     @SuppressWarnings("unchecked")
                     List<MlnDownloaderDownloadFile> list = (List<MlnDownloaderDownloadFile>) in.readObject();
@@ -44,6 +44,14 @@ public class ApplicationConfig {
                 mlnDownloaderService.getMlnDownloadList().forEach(mln -> {
 
                     mln.setFileExist(Files.exists(Path.of(mln.getFilePath())));
+
+                    if (mln.isFileExist())
+                        try {
+                            mln.setDownloadedBytes(Files.size(Path.of(mln.getFilePath())));
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
 
                     System.out.println(mln.getFilePath() + " - File exist: " + mln.isFileExist());
 

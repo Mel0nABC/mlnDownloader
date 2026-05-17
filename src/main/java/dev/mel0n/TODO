@@ -29,13 +29,14 @@ Realizado:
 
 ❌ - Al reiniciar servidor, validar archivos, files y chunks
 
+❌ - mostrar velocidad archivo total
+❌ - mostrar velocidad chunks
+
 ❌ - ajuste de velocidad por descarga individual.
 ❌ - ajuste de velocidad máxima global
 
 ❌ - Controlar el límite de concurrencia en los servidores.
         -> Exception in thread "Thread-1" java.util.concurrent.CompletionException: java.io.IOException: too many concurrent streams
-❌ - aportar checksum para finalizar comprobar.
-
 
 
 ✅ - ISSUE : Si se le da a pause o resumen cuando ya finalizó la descarga, vuelve a bajar las partes
