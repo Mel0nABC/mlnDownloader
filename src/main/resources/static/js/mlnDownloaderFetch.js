@@ -9,10 +9,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const chucksInput = document.querySelector("#chucksInput");
     const fileNameInput = document.querySelector("#fileNameInput");
 
-    // const url = "https://releases.ubuntu.com/26.04/ubuntu-26.04-desktop-amd64.iso";
-    // const file = "ubuntu-26.04-desktop-amd64.iso";
-    const url = "https://es.mirrors.cicku.me/archlinux/iso/2026.05.01/archlinux-2026.05.01-x86_64.iso";
-    const file = "archlinux-2026.05.01-x86_64.iso";
+    const url = "https://releases.ubuntu.com/26.04/ubuntu-26.04-desktop-amd64.iso";
+    const file = "ubuntu-26.04-desktop-amd64.iso";
+    // const url = "https://es.mirrors.cicku.me/archlinux/iso/2026.05.01/archlinux-2026.05.01-x86_64.iso";
+    // const file = "archlinux-2026.05.01-x86_64.iso";
 
     urlInput.value = url;
     chucksInput.value = 4;

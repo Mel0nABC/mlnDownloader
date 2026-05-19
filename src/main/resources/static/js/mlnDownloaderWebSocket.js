@@ -223,6 +223,8 @@ function updateCard(download) {
 
     const partProgressNodes = document.querySelectorAll(`[data-file="partProgress_${download.id}"]`)
 
+    let speedMax = 0;
+
     download.parts.forEach(part => {
 
         const partDiv = document.querySelector(`[data-file="partProgress_${part.path}"]`)
@@ -240,7 +242,39 @@ function updateCard(download) {
             spamProgress.classList.add("bg-success");
         }
 
-    })
+        const speedDiv = document.querySelector(`[data-file="speed_${part.path}"]`);
+        speedDiv.innerHTML = `${part.speedFile} Mbytes/s`;
+
+        speedMax += part.speedFile;
+
+    });
+
+    const speedFile = document.querySelector(`[data-file="speedFile_${download.id}"]`)
+
+    if (download.isDownloaded) {
+        let speedAvg = 0;
+        download.parts.forEach(part => {
+
+            const speedDiv = document.querySelector(`[data-file="speed_${part.path}"]`);
+
+            let partSpeedAvg = 0;
+
+            part.registerSpeed.forEach(r => {
+
+                partSpeedAvg += r;
+
+            });
+
+            speedDiv.innerHTML = `Avg: ${(partSpeedAvg / part.registerSpeed.length).toFixed(2)} Mbytes/s`
+
+            speedAvg += partSpeedAvg / part.registerSpeed.length;
+        });
+
+        speedFile.innerHTML = `Avg: ${speedAvg.toFixed(2)} Mbytes/s`
+
+    } else {
+        speedFile.innerHTML = `${speedMax} Mbytes/s`
+    }
 }
 
 function getBytesToMb(downloadedBytes) {
@@ -386,6 +420,11 @@ function createDownloadCard(download, index) {
                         Progreso total
                     </small>
 
+
+                    <div class="fw-semibold small" data-file="speedFile_${download.id}">
+                        SPEED: Calculando ..
+                    </div>
+
                     <small data-file="progress_${download.id}" data-type="text">
                         ${progress}%
                         
@@ -456,6 +495,10 @@ function createDownloadCard(download, index) {
                                             ${(part.length / 1000 / 1000).toFixed(2)} MB
                                         </small>
 
+                                    </div>
+
+                                    <div class="fw-semibold small" data-file="speed_${part.path}">
+                                        SPEED: ${part.speedFile}
                                     </div>
 
                                     <span class="badge text-bg-primary" data-file="spamProgress_${part.path}" data-type="text">

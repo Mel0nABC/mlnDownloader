@@ -4,6 +4,8 @@
 package dev.mel0n.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,5 +29,16 @@ public class MlnDownloaderPartFile implements Serializable {
     private boolean isDownloading = true;
     @Builder.Default
     private Long speedLimitBytesPerSecond = 10L * 1024L * 1024L * 1024L * 1024L;
+
+    @Builder.Default
+    private Long speedFile = 0L;
+
+    @Builder.Default
+    private List<Long> registerSpeed = new ArrayList<>();
+
+    public void setSpeedFile(Long speed)  {
+        this.speedFile = speed;
+        registerSpeed.add(speed);
+    }
 
 }

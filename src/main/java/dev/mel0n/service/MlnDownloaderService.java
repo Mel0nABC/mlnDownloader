@@ -21,6 +21,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartException;
 
@@ -40,6 +43,7 @@ import dev.mel0n.exception.StorageException;
  *
  */
 @Service
+@EnableAsync
 public class MlnDownloaderService {
 
     private HttpClient client = HttpClient.newHttpClient();
@@ -49,6 +53,12 @@ public class MlnDownloaderService {
     private List<MlnDownloaderDownloadFile> mlnDownloadList = new ArrayList<>();
     private static final Path DOWNLOAD_FOLDER = Path.of("/home/mel0n/Downloads/PROGRAMACION/mlnDownloader/downloads");
     private MlnDownloaderDiscInfo mlnDownloaderDiscInfo;
+    private final MlnDownloaderSpeedService mlnDownloaderSpeedService;
+
+    public MlnDownloaderService(MlnDownloaderSpeedService mlnDownloaderSpeedService) {
+        this.mlnDownloaderSpeedService = mlnDownloaderSpeedService;
+
+    }
 
     public void startDiscControl() {
         try {
@@ -445,6 +455,9 @@ public class MlnDownloaderService {
 
                             int readBytes;
 
+                            System.out.println(1);
+                            mlnDownloaderSpeedService.getSpeedDownloadFromFile(mlnDownloaderPartFile);
+                            System.out.println(2);
                             while ((readBytes = in.read(buffer)) != -1 && mlnDownloaderPartFile.isDownloading()) {
 
                                 out.write(buffer, 0, readBytes);
