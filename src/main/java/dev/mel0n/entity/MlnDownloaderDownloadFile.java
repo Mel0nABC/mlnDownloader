@@ -45,7 +45,7 @@ public class MlnDownloaderDownloadFile implements Serializable {
     private List<MlnDownloaderPartFile> parts = new ArrayList<>();
 
     @Builder.Default
-    private transient List<CompletableFuture<HttpResponse<Path>>> futures = new ArrayList<>();
+    private transient List<Thread> threads = new ArrayList<>();
 
     @Builder.Default
     private boolean isDownloading = true;

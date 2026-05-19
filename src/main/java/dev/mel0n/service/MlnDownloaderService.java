@@ -2,6 +2,7 @@ package dev.mel0n.service;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.URI;
@@ -18,7 +19,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.stereotype.Service;
@@ -50,8 +50,7 @@ public class MlnDownloaderService {
     private static final Path DOWNLOAD_FOLDER = Path.of("/home/mel0n/Downloads/PROGRAMACION/mlnDownloader/downloads");
     private MlnDownloaderDiscInfo mlnDownloaderDiscInfo;
 
-    public MlnDownloaderService() {
-
+    public void startDiscControl() {
         try {
             Path path = MlnDownloaderService.getDOWNLOAD_FOLDER();
 
@@ -67,6 +66,8 @@ public class MlnDownloaderService {
                     .isWritable(Files.isWritable(path))
                     .isExecutable(Files.isExecutable(path))
                     .build();
+
+            System.out.println("Control de almacenamiento iniciado");
 
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -162,7 +163,7 @@ public class MlnDownloaderService {
 
                 long finalStart = start;
 
-                Long finalEnd = (start + chunkSize) > length ? length : start + chunkSize - SOME_BYTE;
+                Long finalEnd = (start + chunkSize) >= length ? length : start + chunkSize - SOME_BYTE;
 
                 String partFileName = mlnDownloaderEntity.getFilePath() + SUFIX + count;
 
@@ -195,9 +196,18 @@ public class MlnDownloaderService {
         setDownloadedPartSize(mlnDownloaderEntity);
 
         try {
-            for (CompletableFuture<HttpResponse<Path>> t : mlnDownloaderEntity.getFutures()) {
-                System.err.println("JOINING");
-                t.join();
+
+            for (Thread t : mlnDownloaderEntity.getThreads()) {
+                t.start();
+            }
+
+            for (Thread t : mlnDownloaderEntity.getThreads()) {
+                try {
+                    t.join();
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
         } catch (java.util.concurrent.CancellationException e) {
             System.out.println("Se canceló la descarga por parte del usuario");
@@ -208,6 +218,7 @@ public class MlnDownloaderService {
         for (MlnDownloaderPartFile p : mlnDownloaderEntity.getParts()) {
             try {
                 checkFileSizeOnParts += Files.size(Path.of(p.getPath()));
+                p.setDownloading(false);
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -219,7 +230,6 @@ public class MlnDownloaderService {
         startMergeFiles(mlnDownloaderEntity);
 
         System.out.println("################################# FINISH MERGE FILES #################################");
-        System.out.println("FROM: " + mlnDownloaderEntity.getFilePath());
     }
 
     public void forceMergeFilesFromClient(UUID id) {
@@ -273,8 +283,6 @@ public class MlnDownloaderService {
 
                     }).sum());
 
-            
-
             if (fileStore.getUsableSpace() < mlnDownloaderEntity.getLength()) {
                 mlnDownloaderEntity.setMerging(false);
                 throw new StorageException("No hay suficiente espacio para realizar la unión de los ficheros");
@@ -307,7 +315,8 @@ public class MlnDownloaderService {
 
                 for (MlnDownloaderPartFile part : mlnDownloadEntity.getParts()) {
 
-                    System.out.println("MERGE: " + part.getPath());
+                    System.out.println(
+                            "MERGE: " + part.getPath() + " - LOCAL SIZE: " + Files.size(Path.of(part.getPath())));
 
                     Files.copy(Path.of(part.getPath()), out);
 
@@ -320,6 +329,8 @@ public class MlnDownloaderService {
 
             if (!mlnDownloadEntity.getLength().equals(Files.size(Path.of(mlnDownloadEntity.getFilePath())))) {
 
+                System.out.println(
+                        mlnDownloadEntity.getLength() + " - " + Files.size(Path.of(mlnDownloadEntity.getFilePath())));
                 throw new MultipartException("Some problem on merge all files");
 
             } else {
@@ -346,8 +357,8 @@ public class MlnDownloaderService {
                 mlnDownloadEntity.setFileExist(true);
                 mlnDownloadEntity.setMerget(true);
                 mlnDownloadEntity.setDownloadedBytes(mlnDownloadEntity.getLength());
-                if (mlnDownloadEntity.getFutures() != null)
-                    mlnDownloadEntity.getFutures().clear();
+                if (mlnDownloadEntity.getThreads() != null)
+                    mlnDownloadEntity.getThreads().clear();
             } else {
 
                 mlnDownloadEntity.setFileExist(false);
@@ -382,16 +393,26 @@ public class MlnDownloaderService {
      */
     public void downPartFile(MlnDownloaderDownloadFile mlnDownloadEntity, Long start, Long end, String partFileName) {
 
-        if (mlnDownloadEntity.getParts().stream().filter(p -> p.getPath().equals(partFileName)).findFirst().isEmpty()) {
+        Optional<MlnDownloaderPartFile> mOptional = mlnDownloadEntity.getParts().stream()
+                .filter(p -> p.getPath().equals(partFileName)).findFirst();
 
-            mlnDownloadEntity.getParts().add(MlnDownloaderPartFile.builder()
+        MlnDownloaderPartFile mlnDownloaderPartFile;
+
+        if (mOptional.isEmpty()) {
+
+            mlnDownloaderPartFile = MlnDownloaderPartFile.builder()
                     .path(partFileName)
                     .length(end - start)
                     .actualSize(0L)
                     .start(start)
                     .end(end)
-                    .build());
+                    .isDownloading(true)
+                    .build();
 
+            mlnDownloadEntity.getParts().add(mlnDownloaderPartFile);
+
+        } else {
+            mlnDownloaderPartFile = mOptional.get();
         }
 
         HttpRequest requestFile = HttpRequest.newBuilder()
@@ -400,20 +421,73 @@ public class MlnDownloaderService {
                 .GET()
                 .build();
 
-        CompletableFuture<HttpResponse<Path>> future = client.sendAsync(
-                requestFile,
-                HttpResponse.BodyHandlers.ofFile(
-                        Path.of(partFileName),
-                        StandardOpenOption.CREATE,
-                        StandardOpenOption.WRITE,
-                        StandardOpenOption.APPEND));
+        int bufferSize = 65536;
 
-        if (mlnDownloadEntity.getFutures() == null)
-            mlnDownloadEntity.setFutures(new ArrayList<>());
+        Thread thread = new Thread(() -> {
 
-        mlnDownloadEntity.getFutures().add(future);
+            try {
 
-        System.out.println("DOWNLOAD: " + partFileName + " - " + "Range bytes=" + start + "-" + end);
+                try {
+                    HttpResponse<InputStream> response = client.send(requestFile,
+                            HttpResponse.BodyHandlers.ofInputStream());
+
+                    try (InputStream in = response.body()) {
+
+                        try (OutputStream out = Files.newOutputStream(
+                                Path.of(partFileName),
+                                StandardOpenOption.CREATE,
+                                StandardOpenOption.APPEND)) {
+
+                            byte[] buffer = new byte[bufferSize];
+
+                            Long bytesActualSeccond = 0L;
+                            Long startSeccond = System.currentTimeMillis();
+
+                            int readBytes;
+
+                            while ((readBytes = in.read(buffer)) != -1 && mlnDownloaderPartFile.isDownloading()) {
+
+                                out.write(buffer, 0, readBytes);
+
+                                bytesActualSeccond += readBytes;
+
+                                Long currentTime = System.currentTimeMillis();
+                                Long elapsed = currentTime - startSeccond;
+
+                                if (bytesActualSeccond >= mlnDownloaderPartFile.getSpeedLimitBytesPerSecond()) {
+
+                                    if (elapsed < 1000)
+                                        Thread.sleep(1000 - elapsed);
+
+                                    bytesActualSeccond = 0L;
+                                    startSeccond = System.currentTimeMillis();
+                                }
+                            }
+                        }
+                    }
+
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+        });
+
+        if (mlnDownloadEntity.getThreads() == null)
+            mlnDownloadEntity.setThreads(new ArrayList<>());
+
+        mlnDownloadEntity.getThreads().add(thread);
+
+        System.out.println(
+                "DOWNLOAD: " + partFileName + " - " + "Range bytes=" + start + "-" + end + " - " + (end - start));
 
     }
 
@@ -512,25 +586,28 @@ public class MlnDownloaderService {
         if (mlnDownloaderEntity.isDownloaded())
             throw new FileAlreadyMerginException("No puedes cancelar ahora el fichero ya se ha descargado");
 
+        // Pause download
         if (mlnDownloaderEntity.isDownloading()) {
 
             System.out.println("################################# Pause download #################################");
 
-            for (CompletableFuture<HttpResponse<Path>> future : mlnDownloaderEntity.getFutures()) {
+            for (MlnDownloaderPartFile part : mlnDownloaderEntity.getParts()) {
+
                 try {
-                    future.cancel(true);
-                } catch (Exception e) {
-                    System.out.println("PETOOOOOOOOO");
+                    part.setDownloading(false);
+                    part.setActualSize(Files.size(Path.of(part.getPath())));
+                    System.out.println("PAUSE ACTUAL SIZE: " + part.getActualSize());
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
             }
-
-            System.out.println("PAUSE DOWNLOAD: " + mlnDownloaderEntity.getFilePath());
 
             System.out.println("##################################################################################");
 
             mlnDownloaderEntity.setDownloading(false);
 
-            mlnDownloaderEntity.getFutures().clear();
+            mlnDownloaderEntity.getThreads().clear();
 
             saveDownloadList();
 
@@ -539,17 +616,19 @@ public class MlnDownloaderService {
 
         System.out.println("################################# Resume download #################################");
 
+        // Resume Download
         for (MlnDownloaderPartFile p : mlnDownloaderEntity.getParts()) {
 
             try {
                 Path fileSizeDownloadedPath = Path.of(p.getPath());
 
-                Long start = p.getStart();
-                Long finalStart = start + Files.size(fileSizeDownloadedPath);
+                Long finalStart = p.getStart() + Files.size(fileSizeDownloadedPath);
+                if (finalStart >= p.getEnd())
+                    continue;
 
                 this.downPartFile(mlnDownloaderEntity, finalStart, p.getEnd(), p.getPath());
 
-                System.out.println("RESUME DOWNLOAD -> " + p.getPath());
+                p.setDownloading(true);
 
             } catch (IOException e) {
                 System.out.println("ERROR ON RESUME DOWNLOAD -> " + p.getPath());
@@ -618,7 +697,7 @@ public class MlnDownloaderService {
             while (mlnDownloadEntity.isDownloading()) {
 
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(200);
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();

@@ -23,5 +23,9 @@ public class MlnDownloaderPartFile implements Serializable {
     private Long actualSize;
     private Long start;
     private Long end;
+    @Builder.Default
+    private boolean isDownloading = true;
+    @Builder.Default
+    private Long speedLimitBytesPerSecond = 10L * 1024L * 1024L * 1024L * 1024L;
 
 }

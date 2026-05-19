@@ -30,6 +30,8 @@ public class ApplicationConfig {
             if (!Files.exists(pathFolder))
                 Files.createDirectory(pathFolder);
 
+            mlnDownloaderService.startDiscControl();
+
             Path fileDataBase = Path.of("data.bin");
 
             if (Files.exists(fileDataBase)) {

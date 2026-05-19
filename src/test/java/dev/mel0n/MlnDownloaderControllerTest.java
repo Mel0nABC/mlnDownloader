@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -21,7 +22,6 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
@@ -101,13 +101,11 @@ public class MlnDownloaderControllerTest {
                     .andExpect(status().isOk())
                     .andDo(print());
 
-            while (!filePath.exists()) {
-                System.out.println(filePath.exists());
+            Thread.sleep(2000);
+
+            while (!Files.exists(filePath.toPath())) {
                 Thread.sleep(1000);
             }
-
-            System.out.println(
-                    "################################################################################################################################################");
 
             assertTrue(filePath.exists());
 
