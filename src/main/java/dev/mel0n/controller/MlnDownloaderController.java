@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import dev.mel0n.dto.MlnDownloadderNewEntityDTO;
-import dev.mel0n.service.MlnDownloaderService;
+import dev.mel0n.service.MlnDownloaderDownloadService;
+import dev.mel0n.service.MlnDownloaderMergeFileService;
 
 /**
  * Controller to manage download options
@@ -25,15 +26,18 @@ import dev.mel0n.service.MlnDownloaderService;
 @RequestMapping("/api")
 public class MlnDownloaderController {
 
-    private MlnDownloaderService mlnDownloaderService;
+    private final MlnDownloaderDownloadService mlnDownloaderService;
+    private final MlnDownloaderMergeFileService mlnDownloaderMergeFileService;
 
     /**
      * Constructir to inyect dependencies
      * 
      * @param mlnDownloaderService
      */
-    public MlnDownloaderController(MlnDownloaderService mlnDownloaderService) {
+    public MlnDownloaderController(MlnDownloaderDownloadService mlnDownloaderService,
+            MlnDownloaderMergeFileService mlnDownloaderMergeFileService) {
         this.mlnDownloaderService = mlnDownloaderService;
+        this.mlnDownloaderMergeFileService = mlnDownloaderMergeFileService;
     }
 
     /**
@@ -107,7 +111,7 @@ public class MlnDownloaderController {
     @PostMapping("/downloads/{id}")
     public ResponseEntity<Map<String, Object>> forceMergeFiles(@PathVariable String id) {
 
-        this.mlnDownloaderService.forceMergeFilesFromClient(UUID.fromString(id));
+        this.mlnDownloaderMergeFileService.forceMergeFilesFromClient(UUID.fromString(id));
 
         return ResponseEntity.ok(Map.of("success", true, "message", "Ficheros unidos satisfactoriamente"));
     }

@@ -5,10 +5,8 @@ package dev.mel0n.entity;
 
 import java.io.Serializable;
 import java.net.URI;
-import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import dev.mel0n.dto.MlnDownloaderDownloadFileDTO;
 import lombok.AllArgsConstructor;
@@ -18,7 +16,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.nio.file.Path;
 import java.util.UUID;
 
 /**

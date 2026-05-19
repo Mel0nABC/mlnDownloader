@@ -1,9 +1,5 @@
 package dev.mel0n.service;
 
-import java.io.IOException;
-import java.nio.file.FileStore;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -12,6 +8,7 @@ import org.springframework.stereotype.Service;
 import dev.mel0n.dto.MlnDownloaderDownloadFileDTO;
 import dev.mel0n.entity.MlnDownloaderDiscInfo;
 import dev.mel0n.entity.MlnDownloaderDownloadFile;
+import jakarta.annotation.PostConstruct;
 
 /**
  * Service to send some information to boadcast
@@ -20,9 +17,18 @@ import dev.mel0n.entity.MlnDownloaderDownloadFile;
 public class MlnDownloaderNotificationService {
 
     private final SimpMessagingTemplate template;
+    private final MlnDownloaderDownloadService mlnDownloaderService;
+    private final MlnDownloaderDiscService mlnmDownloaderDiscService;
 
-    public MlnDownloaderNotificationService(SimpMessagingTemplate template, MlnDownloaderService mlnDownloaderService) {
+    public MlnDownloaderNotificationService(SimpMessagingTemplate template,
+            MlnDownloaderDownloadService mlnDownloaderService, MlnDownloaderDiscService mlnmDownloaderDiscService) {
         this.template = template;
+        this.mlnDownloaderService = mlnDownloaderService;
+        this.mlnmDownloaderDiscService = mlnmDownloaderDiscService;
+    }
+
+    @PostConstruct
+    public void startNotificationThread() {
         new Thread(() -> {
             starNotificationThread(mlnDownloaderService);
         }).start();
@@ -33,7 +39,7 @@ public class MlnDownloaderNotificationService {
      * 
      * @param mlnDownloaderService obtain list downloads
      */
-    public void starNotificationThread(MlnDownloaderService mlnDownloaderService) {
+    public void starNotificationThread(MlnDownloaderDownloadService mlnDownloaderService) {
 
         while (true) {
             try {
@@ -42,7 +48,7 @@ public class MlnDownloaderNotificationService {
                 sendFiles(mlnDownloaderService.getMlnDownloadList().stream().map(MlnDownloaderDownloadFile::toDTO)
                         .toList());
 
-                sendDiscStatus(mlnDownloaderService.getMlnDownloaderDiscInfo());
+                sendDiscStatus(mlnmDownloaderDiscService.getMlnDownloaderDiscInfo());
 
             } catch (InterruptedException e) {
                 e.printStackTrace();

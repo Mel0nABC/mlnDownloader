@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -28,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import tools.jackson.databind.ObjectMapper;
 
 import dev.mel0n.dto.MlnDownloadderNewEntityDTO;
-import dev.mel0n.service.MlnDownloaderService;
+import dev.mel0n.service.MlnDownloaderDownloadService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -56,7 +55,7 @@ public class MlnDownloaderControllerTest {
 
             this.fileName = path.substring(path.lastIndexOf('/') + 1);
 
-            filePath = new File(MlnDownloaderService.getDOWNLOAD_FOLDER() + "/" + fileName);
+            filePath = new File(MlnDownloaderDownloadService.getDOWNLOAD_FOLDER() + "/" + fileName);
 
             if (this.filePath.exists())
                 this.filePath.delete();

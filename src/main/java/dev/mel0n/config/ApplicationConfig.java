@@ -15,22 +15,23 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import dev.mel0n.entity.MlnDownloaderDownloadFile;
-import dev.mel0n.service.MlnDownloaderService;
+import dev.mel0n.service.MlnDownloaderDiscService;
+import dev.mel0n.service.MlnDownloaderDownloadService;
+import dev.mel0n.service.MlnDownloaderNotificationService;
 
 @Configuration
 public class ApplicationConfig {
 
     @Bean
-    public CommandLineRunner runner(MlnDownloaderService mlnDownloaderService) {
+    public CommandLineRunner runner(MlnDownloaderDownloadService mlnDownloaderService,
+            MlnDownloaderDiscService mlnDownloaderDiscService, MlnDownloaderNotificationService mlnDownloaderNotificationService) {
         return args -> {
             System.out.println("################################# Loading data #################################");
 
-            Path pathFolder = MlnDownloaderService.getDOWNLOAD_FOLDER();
+            Path pathFolder = MlnDownloaderDownloadService.getDOWNLOAD_FOLDER();
 
             if (!Files.exists(pathFolder))
                 Files.createDirectory(pathFolder);
-
-            mlnDownloaderService.startDiscControl();
 
             Path fileDataBase = Path.of("data.bin");
 
