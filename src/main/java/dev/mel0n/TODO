@@ -30,8 +30,7 @@ Realizado:
 ✅ - mostrar velocidad archivo total
 ✅ - mostrar velocidad chunks
 
-✅ - ajuste de velocidad máxima global
-❌ - ajuste de velocidad por descarga individual.
+✅ - ajuste de velocidad máxima global por fichero
 
 ❌ - Al reiniciar servidor, validar archivos, files y chunks
 

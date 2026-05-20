@@ -24,14 +24,10 @@ public class ApplicationConfig {
 
     @Bean
     public CommandLineRunner runner(MlnDownloaderDownloadService mlnDownloaderService,
-            MlnDownloaderDiscService mlnDownloaderDiscService, MlnDownloaderNotificationService mlnDownloaderNotificationService) {
+            MlnDownloaderDiscService mlnDownloaderDiscService,
+            MlnDownloaderNotificationService mlnDownloaderNotificationService) {
         return args -> {
             System.out.println("################################# Loading data #################################");
-
-            Path pathFolder = MlnDownloaderDownloadService.getDOWNLOAD_FOLDER();
-
-            if (!Files.exists(pathFolder))
-                Files.createDirectory(pathFolder);
 
             Path fileDataBase = Path.of("data.bin");
 
@@ -52,7 +48,6 @@ public class ApplicationConfig {
                         try {
                             mln.setDownloadedBytes(Files.size(Path.of(mln.getFilePath())));
                         } catch (IOException e) {
-                            // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
 
