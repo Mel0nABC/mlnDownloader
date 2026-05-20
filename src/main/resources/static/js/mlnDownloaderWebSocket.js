@@ -410,7 +410,7 @@ function createDownloadCard(download, index) {
                             Velocidad (Mbytes/s)
                         </small>
 
-                       <input type="number" class="form-control form-control-sm text-center"
+                       <input type="number" class="form-control form-control-sm text-center mt-2"
                        id="speedLimit_${download.id}" name="speedLimit_${download.id}" required="" min="0.1" step="0.1" value="${download.speedLimit / 1000 / 1000}">
 
                     </div>
