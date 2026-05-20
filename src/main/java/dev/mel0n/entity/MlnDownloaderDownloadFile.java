@@ -62,6 +62,9 @@ public class MlnDownloaderDownloadFile implements Serializable {
     @Builder.Default
     private Long downloadedBytes = 0L;
 
+    @Builder.Default
+    private Long speedLimit = 10L * 1024 * 1024 * 1024 * 1024;
+
     public MlnDownloaderDownloadFileDTO toDTO() {
         return MlnDownloaderDownloadFileDTO.builder()
                 .id(id)

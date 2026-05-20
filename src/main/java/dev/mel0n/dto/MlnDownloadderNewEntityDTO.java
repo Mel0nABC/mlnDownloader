@@ -12,7 +12,8 @@ import lombok.Builder;
  */
 @Builder
 public record MlnDownloadderNewEntityDTO(
-                URI uri,
-                int chunks,
-                String fileName) {
+        URI uri,
+        int chunks,
+        String fileName,
+        double speedLimit) {
 }

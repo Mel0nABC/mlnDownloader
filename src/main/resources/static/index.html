@@ -35,7 +35,7 @@ SPDX-License-Identifier: MIT -->
             <!-- contenido -->
             <div class="collapse navbar-collapse" id="navbarToggler">
 
-                <div class="w-100">
+                <div class="w-100 ">
 
                     <!-- título -->
                     <div class="row mb-3">
@@ -62,41 +62,55 @@ SPDX-License-Identifier: MIT -->
                     </div>
 
                     <!-- formulario -->
-                    <div class="row g-3 align-items-end">
+                    <div class="row g-3 justify-content-center text-center">
 
                         <!-- URL -->
-                        <div class="col-12 col-lg-5">
+                        <div class="col-12 col-lg-12">
                             <label class="form-label small fw-semibold" for="urlInput">
                                 URL
                             </label>
 
-                            <input type="text" class="form-control form-control-sm" id="urlInput" name="urlInput"
+                            <input type="text" class="form-control form-control-sm text-center" id="urlInput" name="urlInput"
                                 required placeholder="Introduce URL de descarga">
                         </div>
 
+                    </div>
+
+                    <div class="row g-3 justify-content-center text-center">
+
                         <!-- nombre archivo -->
-                        <div class="col-12 col-lg-4">
+                        <div class="col-12 col-lg-6">
                             <label class="form-label small fw-semibold" for="fileNameInput">
                                 Nombre del archivo
                             </label>
 
-                            <input type="text" class="form-control form-control-sm" id="fileNameInput"
+                            <input type="text" class="form-control form-control-sm text-center" id="fileNameInput"
                                 name="fileNameInput" required placeholder="archivo.iso">
                         </div>
 
                         <!-- chunks -->
-                        <div class="col-6 col-lg-2">
+                        <div class="col-12 col-lg-1">
                             <label class="form-label small fw-semibold" for="chucksInput">
                                 Fragmentos
                             </label>
 
-                            <input type="number" class="form-control form-control-sm" id="chucksInput"
+                            <input type="number" class="form-control form-control-sm  text-center" id="chucksInput"
                                 name="chucksInput" required min="1" placeholder="8">
                         </div>
 
+                        <!-- Limite velocidad -->
+                        <div class="col-12 col-lg-3">
+                            <label class="form-label small fw-semibold" for="speedLimit">
+                                Límite velocidad (Mbytes/s)
+                            </label>
+
+                            <input type="number" class="form-control form-control-sm text-center" id="speedLimit"
+                                name="speedLimit" required min="0.1" step="0.1" placeholder="100" value="100">
+                        </div>
+
                         <!-- botón -->
-                        <div class="col-6 col-lg-1 d-grid">
-                            <button class="btn btn-primary btn-sm" id="btn">
+                        <div class="col-12 col-lg-2 d-flex align-items-end">
+                            <button class="btn btn-primary btn-sm w-100" id="btn" name="btn">
                                 DOWNLOAD
                             </button>
                         </div>

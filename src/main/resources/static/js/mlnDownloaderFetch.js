@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const urlInput = document.querySelector("#urlInput");
     const chucksInput = document.querySelector("#chucksInput");
     const fileNameInput = document.querySelector("#fileNameInput");
+    const speedLimit = document.querySelector("#speedLimit");
 
     const url = "https://releases.ubuntu.com/26.04/ubuntu-26.04-desktop-amd64.iso";
     const file = "ubuntu-26.04-desktop-amd64.iso";
@@ -32,20 +33,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const btn = document.querySelector("#btn");
     btn.addEventListener("click", () => {
-        console.log("START DOWNLOAD")
+        console.log("START DOWNLOAD");
 
-        const urlInputText = urlInput.value.trim()
-        const chucksInputText = chucksInput.value.trim()
-        const fileNameInputText = fileNameInput.value.trim()
+        const urlInputText = urlInput.value.trim();
+        const chucksInputText = chucksInput.value.trim();
+        const fileNameInputText = fileNameInput.value.trim();
+        const speedLimitInputText = speedLimit.value.trim();
 
 
         if (urlInputText == "") {
             alert("Debes introducir una URL antes de continuar");
-            return;
-        }
-
-        if (chucksInputText == "") {
-            alert("Debes indicar cuantas partes simultáneas descargar");
             return;
         }
 
@@ -55,7 +52,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        download(urlInput.value, chucksInput.value, fileNameInput.value);
+        if (chucksInputText == "") {
+            alert("Debes indicar cuantas partes simultáneas descargar");
+            return;
+        }
+
+        if (speedLimitInputText == "") {
+            alert("Debes introducir una velocidad de descarta");
+            return;
+        }
+console.log(speedLimitInputText)
+
+        download(urlInputText, chucksInputText, fileNameInputText, speedLimitInputText);
     })
 
     const cleanBtn = document.querySelector("#cleanBtn");
@@ -68,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 })
 
-async function download(urlInput, chucksInput, fileNameInput) {
+async function download(urlInput, chucksInput, fileNameInput, speedLimitInput) {
     try {
 
         const response = await fetch("/api/downloads", {
@@ -79,7 +87,8 @@ async function download(urlInput, chucksInput, fileNameInput) {
             body: JSON.stringify({
                 uri: urlInput,
                 chunks: chucksInput,
-                fileName: fileNameInput
+                fileName: fileNameInput,
+                speedLimit: Number(speedLimitInput)
             })
         });
 

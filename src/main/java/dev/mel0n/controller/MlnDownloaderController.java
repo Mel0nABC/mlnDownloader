@@ -42,6 +42,23 @@ public class MlnDownloaderController {
 
     /**
      * 
+     * Create new download and start automatic
+     * 
+     * @param mlnDownloadderEntityDTO basic informatión tu create new download
+     * @return ResponseEntity with map, message value is a String text
+     */
+    @PostMapping("/downloads")
+    public ResponseEntity<Map<String, Object>> newDownload(
+            @RequestBody MlnDownloadderNewEntityDTO mlnDownloadderEntityDTO) {
+
+        this.mlnDownloaderService.newDownload(mlnDownloadderEntityDTO);
+
+        return ResponseEntity
+                .ok(Map.of("success", true, "message", "Nueva descarga iniciada"));
+    }
+
+    /**
+     * 
      * Delete download activity
      * 
      * @param fileName String file name to delete download activity
@@ -68,23 +85,6 @@ public class MlnDownloaderController {
 
         return ResponseEntity
                 .ok(Map.of("success", true, "message", "Se eliminaron las descargas finalizadas"));
-    }
-
-    /**
-     * 
-     * Create new download and start automatic
-     * 
-     * @param mlnDownloadderEntityDTO basic informatión tu create new download
-     * @return ResponseEntity with map, message value is a String text
-     */
-    @PostMapping("/downloads")
-    public ResponseEntity<Map<String, Object>> newDownload(
-            @RequestBody MlnDownloadderNewEntityDTO mlnDownloadderEntityDTO) {
-
-        this.mlnDownloaderService.newDownload(mlnDownloadderEntityDTO);
-
-        return ResponseEntity
-                .ok(Map.of("success", true, "message", "Nueva descarga iniciada"));
     }
 
     /**

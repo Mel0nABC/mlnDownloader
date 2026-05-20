@@ -249,9 +249,12 @@ function updateCard(download) {
 
     });
 
+
+
     const speedFile = document.querySelector(`[data-file="speedFile_${download.id}"]`)
 
     if (download.isDownloaded) {
+        // On finish download, calculate averenge
         let speedAvg = 0;
         download.parts.forEach(part => {
 
@@ -273,6 +276,7 @@ function updateCard(download) {
         speedFile.innerHTML = `Avg: ${speedAvg.toFixed(2)} Mbytes/s`
 
     } else {
+        // Calculate total speed when download is running
         speedFile.innerHTML = `${speedMax} Mbytes/s`
     }
 }

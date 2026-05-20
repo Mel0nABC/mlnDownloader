@@ -27,13 +27,13 @@ Realizado:
         ✅ - status que avise que se está mergeando ficheros
         ✅ - Validacion de chunks que el tamño sea correcto
 
-❌ - Al reiniciar servidor, validar archivos, files y chunks
-
 ✅ - mostrar velocidad archivo total
 ✅ - mostrar velocidad chunks
 
+✅ - ajuste de velocidad máxima global
 ❌ - ajuste de velocidad por descarga individual.
-❌ - ajuste de velocidad máxima global
+
+❌ - Al reiniciar servidor, validar archivos, files y chunks
 
 ❌ - Controlar el límite de concurrencia en los servidores.
         -> Exception in thread "Thread-1" java.util.concurrent.CompletionException: java.io.IOException: too many concurrent streams

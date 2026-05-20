@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -87,6 +88,7 @@ public class MlnDownloaderDownloadService {
                     .filePath(filePath)
                     .length(length)
                     .chunks(chunks)
+                    .speedLimit(getMbyteToByte(mlnDownloaderEntityDTO.speedLimit()))
                     .build();
 
             mlnDownloadList.add(mlnDownloaderEntity);
@@ -129,6 +131,8 @@ public class MlnDownloaderDownloadService {
      */
     public void startDownload(MlnDownloaderDownloadFile mlnDownloaderEntity) {
         try {
+
+            System.out.println("ESTO ESTÁ BIEN: " + mlnDownloaderEntity.getSpeedLimit());
 
             Long length = mlnDownloaderEntity.getLength();
             Long chunkSize = length / mlnDownloaderEntity.getChunks();
@@ -235,7 +239,11 @@ public class MlnDownloaderDownloadService {
                     .start(start)
                     .end(end)
                     .isDownloading(true)
+                    .speedLimitBytesPerSecond(mlnDownloadEntity.getSpeedLimit())
                     .build();
+
+            System.out.println("TEST: " + getMbyteToByte(mlnDownloadEntity.getSpeedLimit()));
+            System.out.println("MUCHO MASSS " + mlnDownloaderPartFile.getSpeedLimitBytesPerSecond());
 
             mlnDownloadEntity.getParts().add(mlnDownloaderPartFile);
 
@@ -273,9 +281,8 @@ public class MlnDownloaderDownloadService {
 
                             int readBytes;
 
-                            System.out.println(1);
                             mlnDownloaderSpeedService.getSpeedDownloadFromFile(mlnDownloaderPartFile);
-                            System.out.println(2);
+
                             while ((readBytes = in.read(buffer)) != -1 && mlnDownloaderPartFile.isDownloading()) {
 
                                 out.write(buffer, 0, readBytes);
@@ -514,6 +521,16 @@ public class MlnDownloaderDownloadService {
      */
     public Long getByteToMbyte(Long bytes) {
         return bytes / BYTE_TO_MBYTE;
+    }
+
+    /**
+     * Convert mbytes to bytes
+     * 
+     * @param mbytes mbytes size
+     * @return Long with bytes size
+     */
+    public Long getMbyteToByte(double mbytes) {
+        return (long) (mbytes * BYTE_TO_MBYTE);
     }
 
     /**
