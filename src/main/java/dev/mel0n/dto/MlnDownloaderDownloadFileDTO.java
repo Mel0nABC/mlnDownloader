@@ -15,17 +15,18 @@ import lombok.Builder;
  */
 @Builder
 public record MlnDownloaderDownloadFileDTO(
-        UUID id,
-        URI uri,
-        String filePath,
-        Long length,
-        int chunks,
-        List<MlnDownloaderPartFile> parts,
-        boolean isDownloading,
-        boolean isDownloaded,
-        boolean isFileExist,
-        boolean isMerging,
-        boolean isMerget,
-        Long downloadedBytes) {
+                UUID id,
+                URI uri,
+                String filePath,
+                Long length,
+                int chunks,
+                List<MlnDownloaderPartFile> parts,
+                boolean isDownloading,
+                boolean isDownloaded,
+                boolean isFileExist,
+                boolean isMerging,
+                boolean isMerget,
+                Long downloadedBytes,
+                Long speedLimit) {
 
 }

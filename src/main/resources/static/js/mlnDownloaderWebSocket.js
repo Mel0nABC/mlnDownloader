@@ -1,7 +1,7 @@
 /* SPDX-FileCopyrightText: 2025 Mel0nABC
 
  SPDX-License-Identifier: MIT */
-import { deleteDownloaded, pauseOrResumeDownload, forceMerge } from "./mlnDownloaderFetch.js";
+import { deleteDownloaded, pauseOrResumeDownload, forceMerge, changeSpeedLimit } from "./mlnDownloaderFetch.js";
 
 let downloads = new Map();
 
@@ -70,7 +70,7 @@ function subcriptionDownloads(jsonString) {
 
             const actionBtn = document.querySelector(`[data-file="actionBtn_${download.id}"]`);
             const delBtn = document.querySelector(`[data-file="delBtn_${download.id}"]`);
-
+            const speedLimit = document.querySelector(`#speedLimit_${download.id}`);
 
 
             actionBtn.addEventListener("click", (e) => {
@@ -82,6 +82,10 @@ function subcriptionDownloads(jsonString) {
             delBtn.addEventListener("click", (e) => {
                 const id = e.target.dataset.file.split("_")[1];
                 deleteDownloaded(id, downloads)
+            })
+
+            speedLimit.addEventListener("change", () => {
+                changeSpeedLimit(download.id, speedLimit.value)
             })
         }
     });
@@ -243,9 +247,9 @@ function updateCard(download) {
         }
 
         const speedDiv = document.querySelector(`[data-file="speed_${part.path}"]`);
-        speedDiv.innerHTML = `${part.speedFile} Mbytes/s`;
+        speedDiv.innerHTML = `${part.actualSpeedFile} Mbytes/s`;
 
-        speedMax += part.speedFile;
+        speedMax += part.actualSpeedFile;
 
     });
 
@@ -308,6 +312,8 @@ function connect() {
 
 function createDownloadCard(download, index) {
 
+    console.log(download)
+
     const progress =
         download.length > 0
             ? Math.floor((download.downloadedBytes / download.length) * 100)
@@ -355,7 +361,7 @@ function createDownloadCard(download, index) {
             <!-- INFO -->
             <div class="row mt-3 g-2">
 
-                <div class="col-6 col-lg-3">
+                <div class="col-6 col-lg-2">
                     <div class="border rounded p-2 h-100">
 
                         <small class="text-body-secondary d-block">
@@ -369,7 +375,7 @@ function createDownloadCard(download, index) {
                     </div>
                 </div>
 
-                <div class="col-6 col-lg-3">
+                <div class="col-6 col-lg-2">
                     <div class="border rounded p-2 h-100">
 
                         <small class="text-body-secondary d-block">
@@ -383,7 +389,7 @@ function createDownloadCard(download, index) {
                     </div>
                 </div>
 
-                <div class="col-6 col-lg-3">
+                <div class="col-6 col-lg-2">
                     <div class="border rounded p-2 h-100">
 
                         <small class="text-body-secondary d-block">
@@ -397,7 +403,20 @@ function createDownloadCard(download, index) {
                     </div>
                 </div>
 
-                <div class="col-6 col-lg-3">
+                <div class="col-6 col-lg-2">
+                    <div class="border rounded p-2 h-100">
+
+                        <small class="text-body-secondary d-block">
+                            Velocidad (Mbytes/s)
+                        </small>
+
+                       <input type="number" class="form-control form-control-sm text-center"
+                       id="speedLimit_${download.id}" name="speedLimit_${download.id}" required="" min="0.1" step="0.1" value="${download.speedLimit / 1000 / 1000}">
+
+                    </div>
+                </div>
+
+                <div class="col-6 col-lg-4">
                     <div class="border rounded p-2 h-100">
 
                         <small class="text-body-secondary d-block">

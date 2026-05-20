@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.math.BigDecimal;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -25,6 +24,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import dev.mel0n.dto.MlnDownloadderNewEntityDTO;
+import dev.mel0n.dto.MlnDownloaderChangeSpeedLimitDTO;
 import dev.mel0n.entity.MlnDownloaderDownloadFile;
 import dev.mel0n.entity.MlnDownloaderPartFile;
 import dev.mel0n.exception.FileAlreadyDownloadederException;
@@ -132,8 +132,6 @@ public class MlnDownloaderDownloadService {
     public void startDownload(MlnDownloaderDownloadFile mlnDownloaderEntity) {
         try {
 
-            System.out.println("ESTO ESTÁ BIEN: " + mlnDownloaderEntity.getSpeedLimit());
-
             Long length = mlnDownloaderEntity.getLength();
             Long chunkSize = length / mlnDownloaderEntity.getChunks();
 
@@ -239,11 +237,8 @@ public class MlnDownloaderDownloadService {
                     .start(start)
                     .end(end)
                     .isDownloading(true)
-                    .speedLimitBytesPerSecond(mlnDownloadEntity.getSpeedLimit())
+                    .speedLimit(mlnDownloadEntity.getSpeedLimit())
                     .build();
-
-            System.out.println("TEST: " + getMbyteToByte(mlnDownloadEntity.getSpeedLimit()));
-            System.out.println("MUCHO MASSS " + mlnDownloaderPartFile.getSpeedLimitBytesPerSecond());
 
             mlnDownloadEntity.getParts().add(mlnDownloaderPartFile);
 
@@ -292,7 +287,7 @@ public class MlnDownloaderDownloadService {
                                 Long currentTime = System.currentTimeMillis();
                                 Long elapsed = currentTime - startSeccond;
 
-                                if (bytesActualSeccond >= mlnDownloaderPartFile.getSpeedLimitBytesPerSecond()) {
+                                if (bytesActualSeccond >= mlnDownloaderPartFile.getSpeedLimit()) {
 
                                     if (elapsed < 1000)
                                         Thread.sleep(1000 - elapsed);
@@ -577,6 +572,26 @@ public class MlnDownloaderDownloadService {
             System.out.println("STOP CONTROL DOWNLOAD SIZE: " + mlnDownloadEntity.getFilePath());
 
         }).start();
+    }
+
+    /**
+     * Change speed limit
+     * 
+     * @param mlnDownloaderChangeSpeedLimitDTO
+     */
+    public void changeSpeedLimit(MlnDownloaderChangeSpeedLimitDTO mlnDownloaderChangeSpeedLimitDTO) {
+
+        String id = mlnDownloaderChangeSpeedLimitDTO.id();
+        Long speedLimit = getMbyteToByte(mlnDownloaderChangeSpeedLimitDTO.speedLimit());
+
+        MlnDownloaderDownloadFile mlnDownloaderDownloadFile = this.mlnDownloadList.stream()
+                .filter(p -> p.getId().toString().equals(id)).findFirst().get();
+
+        mlnDownloaderDownloadFile.setSpeedLimit(speedLimit);
+
+        for (MlnDownloaderPartFile part : mlnDownloaderDownloadFile.getParts()) {
+            part.setSpeedLimit(speedLimit);
+        }
     }
 
     /**

@@ -79,6 +79,7 @@ public class MlnDownloaderDownloadFile implements Serializable {
                 .isMerging(isMerging)
                 .isMerget(isMerget)
                 .downloadedBytes(downloadedBytes)
+                .speedLimit(speedLimit)
                 .build();
     }
 

@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Debes introducir una velocidad de descarta");
             return;
         }
-console.log(speedLimitInputText)
+        console.log(speedLimitInputText)
 
         download(urlInputText, chucksInputText, fileNameInputText, speedLimitInputText);
     })
@@ -173,6 +173,33 @@ export async function forceMerge(id) {
 
         const response = await fetch("/api/downloads/" + id, {
             method: "POST"
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            alert(data.message)
+        }
+
+        console.log("Respuesta:", data.message);
+
+    } catch (error) {
+        console.error("Error:", error);
+    }
+}
+
+export async function changeSpeedLimit(id, newSpeed) {
+    try {
+
+        const response = await fetch("/api/downloads", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                id: id,
+                speedLimit: Number(newSpeed)
+            })
         });
 
         const data = await response.json();

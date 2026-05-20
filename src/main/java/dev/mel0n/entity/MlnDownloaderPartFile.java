@@ -32,16 +32,16 @@ public class MlnDownloaderPartFile implements Serializable {
      * Variable to limite speed download with this part
      */
 
-    private Long speedLimitBytesPerSecond;
+    private Long speedLimit;
 
     @Builder.Default
-    private Long speedFile = 0L;
+    private Long actualSpeedFile = 0L;
 
     @Builder.Default
     private List<Long> registerSpeed = new ArrayList<>();
 
     public void setSpeedFile(Long speed) {
-        this.speedFile = speed;
+        this.actualSpeedFile = speed;
         registerSpeed.add(speed);
     }
 

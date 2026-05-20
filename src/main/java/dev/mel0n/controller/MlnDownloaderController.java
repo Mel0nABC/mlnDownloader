@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import dev.mel0n.dto.MlnDownloadderNewEntityDTO;
+import dev.mel0n.dto.MlnDownloaderChangeSpeedLimitDTO;
 import dev.mel0n.service.MlnDownloaderDownloadService;
 import dev.mel0n.service.MlnDownloaderMergeFileService;
 
@@ -114,5 +115,20 @@ public class MlnDownloaderController {
         this.mlnDownloaderMergeFileService.forceMergeFilesFromClient(UUID.fromString(id));
 
         return ResponseEntity.ok(Map.of("success", true, "message", "Ficheros unidos satisfactoriamente"));
+    }
+
+    /**
+     * To change speed limit
+     * 
+     * @param mlnDownloaderChangeSpeedLimitDTO
+     * @return
+     */
+    @PutMapping("/downloads")
+    public ResponseEntity<Map<String, Object>> changeSpeedLimit(
+            @RequestBody MlnDownloaderChangeSpeedLimitDTO mlnDownloaderChangeSpeedLimitDTO) {
+
+        this.mlnDownloaderService.changeSpeedLimit(mlnDownloaderChangeSpeedLimitDTO);
+
+        return ResponseEntity.ok(Map.of("success", true, "message", "Velocidad cambiada satisfactoriamente"));
     }
 }
