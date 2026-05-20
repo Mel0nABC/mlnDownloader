@@ -229,6 +229,8 @@ function updateCard(download) {
 
     let speedMax = 0;
 
+
+    // Calculate % download progress
     download.parts.forEach(part => {
 
         const partDiv = document.querySelector(`[data-file="partProgress_${part.path}"]`)
@@ -247,7 +249,7 @@ function updateCard(download) {
         }
 
         const speedDiv = document.querySelector(`[data-file="speed_${part.path}"]`);
-        speedDiv.innerHTML = `${part.actualSpeedFile} Mbytes/s`;
+        speedDiv.innerHTML = `${(part.actualSpeedFile / 1000 / 1000).toFixed(2)} Mbytes/s`;
 
         speedMax += part.actualSpeedFile;
 
@@ -272,16 +274,16 @@ function updateCard(download) {
 
             });
 
-            speedDiv.innerHTML = `Avg: ${(partSpeedAvg / part.registerSpeed.length).toFixed(2)} Mbytes/s`
+            speedDiv.innerHTML = `Avg: ${(partSpeedAvg / part.registerSpeed.length / 1000 / 1000).toFixed(2)} Mbytes/s`
 
             speedAvg += partSpeedAvg / part.registerSpeed.length;
         });
 
-        speedFile.innerHTML = `Avg: ${speedAvg.toFixed(2)} Mbytes/s`
+        speedFile.innerHTML = `Avg: ${(speedAvg / 1000 / 1000).toFixed(2)} Mbytes/s`
 
     } else {
         // Calculate total speed when download is running
-        speedFile.innerHTML = `${speedMax} Mbytes/s`
+        speedFile.innerHTML = `${(speedMax / 1000 / 1000).toFixed(2)} Mbytes/s`
     }
 }
 
@@ -311,8 +313,6 @@ function connect() {
 }
 
 function createDownloadCard(download, index) {
-
-    console.log(download)
 
     const progress =
         download.length > 0

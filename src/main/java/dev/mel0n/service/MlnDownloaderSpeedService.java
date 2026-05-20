@@ -32,7 +32,7 @@ public class MlnDownloaderSpeedService {
                     Thread.sleep(1000);
                     Long endSize = Files.size(Path.of(mlnDownloaderPartFile.getPath()));
 
-                    Long speed = (endSize - startSize) / 1000 / 1000;
+                    Long speed = (endSize - startSize);
                     Long speedString = speed;
 
                     mlnDownloaderPartFile.setSpeedFile(speedString);
