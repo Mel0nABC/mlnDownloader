@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -42,11 +43,13 @@ import dev.mel0n.exception.StorageException;
 public class MlnDownloaderDownloadService {
 
     private HttpClient client = HttpClient.newHttpClient();
+
     public static final String SUFIX = "_PART_";
+    private static final Path DOWNLOAD_FOLDER = Path.of("/home/mel0n/Downloads/PROGRAMACION/mlnDownloader/downloads");
     private final Long BYTE_TO_MBYTE = 1000000L;
     private final int SOME_BYTE = 1;
+
     private List<MlnDownloaderDownloadFile> mlnDownloadList = new ArrayList<>();
-    private static final Path DOWNLOAD_FOLDER = Path.of("/home/mel0n/Downloads/PROGRAMACION/mlnDownloader/downloads");
     private final MlnDownloaderSpeedService mlnDownloaderSpeedService;
     private final MlnDownloaderMergeFileService mlnDownloaderMergeFileService;
 
@@ -67,7 +70,6 @@ public class MlnDownloaderDownloadService {
         URI uri = mlnDownloaderEntityDTO.uri();
         int chunks = mlnDownloaderEntityDTO.chunks();
         String filePath = DOWNLOAD_FOLDER + "/" + mlnDownloaderEntityDTO.fileName();
-        Long length = 0L;
 
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -77,7 +79,34 @@ public class MlnDownloaderDownloadService {
 
             HttpResponse<Void> response = client.send(request, HttpResponse.BodyHandlers.discarding());
 
-            length = Long.parseLong(response.headers().map().get("content-length").getFirst());
+            if (response.statusCode() == 302) {
+
+                Optional<String> moptional = response.headers().firstValue("location");
+
+                if (moptional.isEmpty())
+                    throw new FileNotFoundException("El archivo a descargar no se ha localizado");
+
+                try {
+
+                    String newLink = moptional.get();
+                    uri = new URI(newLink);
+
+                    request = HttpRequest.newBuilder()
+                            .uri(uri)
+                            .method("HEAD", HttpRequest.BodyPublishers.noBody())
+                            .build();
+
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+
+                response = client.send(request, HttpResponse.BodyHandlers.discarding());
+
+            }
+
+            Long length = Long.parseLong(response.headers().map().get("content-length").getFirst());
+
+            System.out.println("TAMAÑO -> " + response.headers());
 
             checkWriteOptions(length, mlnDownloaderEntityDTO.fileName());
 
@@ -186,7 +215,7 @@ public class MlnDownloaderDownloadService {
                 try {
                     t.join();
                 } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
+
                     e.printStackTrace();
                 }
             }
@@ -201,7 +230,6 @@ public class MlnDownloaderDownloadService {
                 checkFileSizeOnParts += Files.size(Path.of(p.getPath()));
                 p.setDownloading(false);
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -300,15 +328,12 @@ public class MlnDownloaderDownloadService {
                     }
 
                 } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
 
             } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
@@ -372,7 +397,6 @@ public class MlnDownloaderDownloadService {
                 }
 
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -431,7 +455,6 @@ public class MlnDownloaderDownloadService {
                     part.setActualSize(Files.size(Path.of(part.getPath())));
                     System.out.println("PAUSE ACTUAL SIZE: " + part.getActualSize());
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
@@ -494,7 +517,6 @@ public class MlnDownloaderDownloadService {
                     throw new FileAlreadyDownloadederException("El archivo ya existe localmente");
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -542,7 +564,6 @@ public class MlnDownloaderDownloadService {
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
 

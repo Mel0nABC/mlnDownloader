@@ -47,6 +47,11 @@ public class ApplicationConfig {
                     if (mln.isFileExist())
                         try {
                             mln.setDownloadedBytes(Files.size(Path.of(mln.getFilePath())));
+
+                            if (mln.getDownloadedBytes().equals(mln.getLength())) {
+                                mln.setDownloaded(true);
+                            }
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -54,8 +59,22 @@ public class ApplicationConfig {
                     System.out.println(mln.getFilePath() + " - File exist: " + mln.isFileExist());
 
                     System.out.println("    PARTS: ");
+
                     mln.getParts().forEach(p -> {
-                        System.out.println("        " + p.getPath());
+
+                        boolean exist = Files.exists(Path.of(p.getPath()));
+
+                        System.out.println("        " + p.getPath() + ", Files exist: " + exist);
+
+                        if (exist) {
+
+                            try {
+                                p.setActualSize(Files.size(Path.of(p.getPath())));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
                     });
                     System.out.println(
                             "-------------------------------------------------------------------------------------");
