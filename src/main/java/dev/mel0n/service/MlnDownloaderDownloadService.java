@@ -45,7 +45,7 @@ public class MlnDownloaderDownloadService {
     private HttpClient client = HttpClient.newHttpClient();
 
     public static final String SUFIX = "_PART_";
-    private static final Path DOWNLOAD_FOLDER = Path.of("/home/mel0n/Downloads/PROGRAMACION/mlnDownloader/downloads");
+    private static final Path DOWNLOAD_FOLDER = Path.of("./downloads");
     private final Long BYTE_TO_MBYTE = 1000000L;
     private final int SOME_BYTE = 1;
 
