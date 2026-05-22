@@ -3,8 +3,6 @@
  SPDX-License-Identifier: MIT */
 package dev.mel0n.common;
 
-import java.nio.file.AccessDeniedException;
-import java.nio.file.FileSystemException;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
