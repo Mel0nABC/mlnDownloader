@@ -4,7 +4,7 @@
 
 # MlnDownloader - Multi Thread Downloader (Java)
 
-<img width="1672" height="941" alt="mlnDownloader" src="https://github.com/user-attachments/assets/29ebca73-4524-402b-977b-a26067fc0c65" />
+<img width="1920" height="1080" alt="Portada" src="https://github.com/user-attachments/assets/bf485540-73c2-4735-8d3a-bb16d283bc2e" />
 
 Proyecto en Java **gestor de descargas multihilo**, utilizando HTTP Range, procesamiento concurrente y verificación de integridad de archivos.
 
