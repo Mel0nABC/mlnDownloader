@@ -68,7 +68,7 @@ public class MlnDownloaderMergeFileService {
 
             FileStore fileStore = Files.getFileStore(destionatioFolder);
 
-            mlnDownloaderEntity.setDownloadedBytes(mlnDownloaderEntity.getParts().stream()
+            long result = mlnDownloaderEntity.getParts().stream()
                     .mapToLong(p -> {
                         long resultate = 0L;
                         try {
@@ -78,7 +78,9 @@ public class MlnDownloaderMergeFileService {
                         }
                         return resultate;
 
-                    }).sum());
+                    }).sum();
+
+            mlnDownloaderEntity.setDownloadedBytes(result);
 
             if (fileStore.getUsableSpace() < mlnDownloaderEntity.getLength()) {
                 mlnDownloaderEntity.setMerging(false);

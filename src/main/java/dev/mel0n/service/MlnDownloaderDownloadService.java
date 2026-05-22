@@ -186,6 +186,10 @@ public class MlnDownloaderDownloadService {
 
             System.out.println("###############################################################################");
 
+            for (MlnDownloaderPartFile part : mlnDownloaderEntity.getParts()) {
+                part.setSpeedLimit(mlnDownloaderEntity.getSpeedLimit() / mlnDownloaderEntity.getParts().size());
+            }
+
             new Thread(() -> {
                 startDownloadControl(mlnDownloaderEntity);
             }).start();
@@ -265,7 +269,6 @@ public class MlnDownloaderDownloadService {
                     .start(start)
                     .end(end)
                     .isDownloading(true)
-                    .speedLimit(mlnDownloadEntity.getSpeedLimit())
                     .build();
 
             mlnDownloadEntity.getParts().add(mlnDownloaderPartFile);
@@ -611,7 +614,7 @@ public class MlnDownloaderDownloadService {
         mlnDownloaderDownloadFile.setSpeedLimit(speedLimit);
 
         for (MlnDownloaderPartFile part : mlnDownloaderDownloadFile.getParts()) {
-            part.setSpeedLimit(speedLimit);
+            part.setSpeedLimit(speedLimit / mlnDownloaderDownloadFile.getParts().size());
         }
     }
 
