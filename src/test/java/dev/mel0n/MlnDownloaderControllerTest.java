@@ -92,6 +92,7 @@ public class MlnDownloaderControllerTest {
                     .uri(this.uri)
                     .chunks(10)
                     .fileName(this.fileName)
+                    .speedLimit(1000)
                     .build();
 
             mockMvc.perform(post("/api/downloads")
@@ -121,7 +122,7 @@ public class MlnDownloaderControllerTest {
      * Download arch linux iso, after, repeat download arch linux iso
      */
     @Test
-    public void downloadTestResultFileAlreadyDownloadederException() {
+    public void downloadTestResultFileAlreadyDownloadedException() {
 
         try {
 
@@ -129,6 +130,7 @@ public class MlnDownloaderControllerTest {
                     .uri(this.uri)
                     .chunks(10)
                     .fileName(this.fileName)
+                    .speedLimit(1000)
                     .build();
 
             mockMvc.perform(post("/api/downloads")
