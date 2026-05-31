@@ -38,7 +38,7 @@ SPDX-License-Identifier: MIT -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <scope>compile</scope>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -94,16 +94,8 @@ SPDX-License-Identifier: MIT -->
       </plugin>
 
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.3.0</version>
-        <configuration>
-          <archive>
-            <manifest>
-              <mainClass>dev.mel0n.App</mainClass>
-            </manifest>
-          </archive>
-        </configuration>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
 
     </plugins>
