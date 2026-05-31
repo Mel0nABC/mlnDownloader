@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 const stompClient = new StompJs.Client({
-    brokerURL: "ws://" + window.location.hostname + ":8080/ws-connect"
+    brokerURL: "ws://" + window.location.host + "/ws-connect"
 });
 
 const SUBSCRIBE_PREFIX = "/topic";
