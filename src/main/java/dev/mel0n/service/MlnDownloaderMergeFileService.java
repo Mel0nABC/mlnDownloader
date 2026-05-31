@@ -158,6 +158,9 @@ public class MlnDownloaderMergeFileService {
                 mlnDownloadEntity.setDownloadedBytes(mlnDownloadEntity.getLength());
                 if (mlnDownloadEntity.getThreads() != null)
                     mlnDownloadEntity.getThreads().clear();
+
+                changeOwnerGroup(Path.of(mlnDownloadEntity.getFilePath()));
+
             } else {
 
                 mlnDownloadEntity.setFileExist(false);
@@ -180,5 +183,33 @@ public class MlnDownloaderMergeFileService {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * To change owner and group to downloaded file
+     * 
+     * @param path file to change owner:group
+     */
+    public void changeOwnerGroup(Path path) {
+        try {
+
+            String ownerName = System.getenv("PUID");
+            String groupName = System.getenv("PGID");
+
+            if (ownerName == null) {
+                ownerName = System.getenv("USER");
+            }
+
+            if (groupName == null) {
+                groupName = System.getenv("USER");
+            }
+
+            new ProcessBuilder("chown", ownerName + ":" + groupName, path.toString()).start().waitFor();
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -6,4 +6,6 @@ services:
       - "3000:8080"
     volumes:
       - ./downloads:/downloads
-    # user: "1000:1000" # specific UID:GID from your user
+    environment: # To save files with this user and group
+      - PUID=1000
+      - PGID=1000
